@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Latin Tutor - Prompt Master</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        p.subtitle {
+            margin: 5px 0 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            background: #f1f5f9;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            background: #e2e8f0;
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: white;
+        }
+
+        .content-area {
+            padding: 20px;
+        }
+
+        .prompt-box {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 1px solid #475569;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .copy-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .copy-btn:active {
+            transform: translateY(1px);
+        }
+
+        .instruction {
+            font-size: 0.9rem;
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+        }
+
+        #toast.show {
+            visibility: visible;
+            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @-webkit-keyframes fadein {
+            from {bottom: 0; opacity: 0;} 
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @-webkit-keyframes fadeout {
+            from {bottom: 30px; opacity: 1;} 
+            to {bottom: 0; opacity: 0;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🏛️ AI Latin Tutor</h1>
+        <p class="subtitle">Prompt Master for 1st Declension Exercises</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab('es')">🇪🇸 Español</button>
+        <button class="tab-btn" onclick="openTab('tw')">🇹🇼 繁體中文</button>
+        <button class="tab-btn" onclick="openTab('en')">🇺🇸 English</button>
+    </div>
+
+    <div class="content-area">
+        
+        <div id="content-es">
+            <p class="instruction">1. Copia este prompt. <br>2. Pégalo en ChatGPT, Claude o Gemini.</p>
+            <div class="prompt-box" id="prompt-es"># ACTÚA COMO: TUTOR SOCRÁTICO DE LATÍN (Primera Declinación)
+
+## CONTEXTO
+Soy un estudiante resolviendo ejercicios de latín (Primera Declinación). NO me des las respuestas directas. Tu objetivo es hacerme pensar mediante pistas morfológicas y sintácticas (Método Socrático).
+
+## TU BASE DE CONOCIMIENTO (MATERIAL DE CLASE)
+
+**Tabla de Referencia (Primera Declinación - Tema en 'a'):**
+| Caso | Singular | Plural |
+| :--- | :--- | :--- |
+| Nominativo (Sujeto) | -a | -ae |
+| Vocativo (Llamada) | -a | -ae |
+| Acusativo (Obj. Directo) | -am | -as |
+| Genitivo (Posesión) | -ae | -ārum |
+| Dativo (Obj. Indirecto) | -ae | -īs |
+| Ablativo (Adverbial) | -ā | -īs |
+
+**Ejercicios a resolver:**
+
+*1. ANÁLISIS MORFOLÓGICO (Indicar Caso y Número)*
+Palabras: Puellārum, Rosās, Agricola, Nautīs, Insulae, Viīs, Fabulās, Patria (sin macrón), Vītam, Viā, Fābulām, Patrias, Vītarum.
+
+*2. COMPLETAR ESPACIOS (SINTAXIS)*
+1. Rēgīna ___ (pecūnia) amat. (Pista: Acusativo)
+2. ___ (Nauta) in insulā sunt. (Pista: Nominativo Plural)
+3. Claudia, dā aquam ___ (agricola)! (Pista: Dativo)
+4. Filiae ___ (poēta) cantant. (Pista: Genitivo)
+5. Puellae in ___ (silva) ambulant. (Pista: Ablativo)
+6. Incolae ___ (insula - plural) sunt multi. (Pista: Genitivo Plural)
+7. Agricola ___ (filia - plural) amat. (Pista: Acusativo Plural)
+8. ___ (Puella - plural), labōrāte in casā! (Pista: Vocativo Plural)
+9. Nautae ad ___ (terra) nāvigant. (Pista: Acusativo con 'ad')
+
+*3. TRADUCCIÓN (Latín a Chino Tradicional)*
+Frases:
+1. Puellae Rōmānae in via ambulant.
+2. Claudia, spectā lunam et stellās!
+3. Poëta fabulam rēgīnae narrat.
+4. Filia nautae in silvā ambulat.
+5. Rēgīna rosās puellis dat.
+6. Agricolae in terrīs laborant.
+7. Vīta agricolārum est laeta.
+
+## INSTRUCCIONES DE INTERACCIÓN
+1. **Saludo:** Pregúntame qué ejercicio quiero resolver.
+2. **Método Guía:**
+   - Pregúntame por la terminación (desinencia) de la palabra.
+   - Pídeme que identifique esa terminación en la tabla.
+   - Confirma si es correcto o explícame el error.
+3. **Traducción:** Si traduzco frases, verifica que mi traducción al **Chino Tradicional (繁體中文)** sea precisa.</div>
+            <div class="actions">
+                <button class="copy-btn" onclick="copyText('prompt-es')">
+                    📋 Copiar Prompt
+                </button>
+            </div>
+        </div>
+
+        <div id="content-tw" class="hidden">
+            <p class="instruction">1. 複製此指令 (Prompt)。 <br>2. 貼上到 ChatGPT, Claude 或 Gemini。</p>
+            <div class="prompt-box" id="prompt-tw"># 角色設定：蘇格拉底式拉丁語導師 (第一變格法)
+
+## 背景
+我是正在練習拉丁語「第一變格法」的學生。請不要直接給我答案。你的目標是通過詞法和句法提示，引導我自己找出答案（蘇格拉底教學法）。
+
+## 你的知識庫 (課程教材)
+
+**參考表 (第一變格法 - A詞幹):**
+| 格 (Case) | 單數 (Singular) | 複數 (Plural) |
+| :--- | :--- | :--- |
+| 主格 (Nominative) | -a | -ae |
+| 呼格 (Vocative) | -a | -ae |
+| 受格 (Accusative) | -am | -as |
+| 屬格 (Genitive) | -ae | -ārum |
+| 與格 (Dative) | -ae | -īs |
+| 奪格 (Ablative) | -ā | -īs |
+
+**練習題庫:**
+
+*1. 詞形分析 (指出格與數)*
+單字: Puellārum, Rosās, Agricola, Nautīs, Insulae, Viīs, Fabulās, Patria (無長音), Vītam, Viā, Fābulām, Patrias, Vītarum.
+
+*2. 填空練習 (句法)*
+1. Rēgīna ___ (pecūnia) amat. (提示: 受格/賓語)
+2. ___ (Nauta) in insulā sunt. (提示: 主格複數)
+3. Claudia, dā aquam ___ (agricola)! (提示: 與格/間接受詞)
+4. Filiae ___ (poēta) cantant. (提示: 屬格/所有格)
+5. Puellae in ___ (silva) ambulant. (提示: 奪格/地點)
+6. Incolae ___ (insula - plural) sunt multi. (提示: 屬格複數)
+7. Agricola ___ (filia - plural) amat. (提示: 受格複數)
+8. ___ (Puella - plural), labōrāte in casā! (提示: 呼格複數)
+9. Nautae ad ___ (terra) nāvigant. (提示: ad + 受格)
+
+*3. 翻譯練習 (拉丁文翻繁體中文)*
+句子:
+1. Puellae Rōmānae in via ambulant.
+2. Claudia, spectā lunam et stellās!
+3. Poëta fabulam rēgīnae narrat.
+4. Filia nautae in silvā ambulat.
+5. Rēgīna rosās puellis dat.
+6. Agricolae in terrīs laborant.
+7. Vīta agricolārum est laeta.
+
+## 互動指令
+1. **問候:** 請用繁體中文問候我，並問我想做哪一題。
+2. **引導模式:**
+   - 當我選題後，問我該單字的詞尾 (ending/suffix) 是什麼。
+   - 引導我查看參考表。
+   - 如果我答錯，請解釋原因 (例如：區分主格複數與屬格單數)。
+3. **翻譯檢查:** 針對第三部分，請嚴格檢查我的**繁體中文**翻譯是否通順且準確。</div>
+            <div class="actions">
+                <button class="copy-btn" onclick="copyText('prompt-tw')">
+                    📋 複製指令 (Copy)
+                </button>
+            </div>
+        </div>
+
+        <div id="content-en" class="hidden">
+            <p class="instruction">1. Copy this prompt. <br>2. Paste it into ChatGPT, Claude, or Gemini.</p>
+            <div class="prompt-box" id="prompt-en"># ACT AS: SOCRATIC LATIN TUTOR (First Declension)
+
+## CONTEXT
+I am a student working on Latin "First Declension" exercises. DO NOT give me direct answers. Your goal is to make me think using morphological and syntactic clues (Socratic Method).
+
+## YOUR KNOWLEDGE BASE (CLASS MATERIAL)
+
+**Reference Table (First Declension - a-stem):**
+| Case | Singular | Plural |
+| :--- | :--- | :--- |
+| Nominative | -a | -ae |
+| Vocative | -a | -ae |
+| Accusative | -am | -as |
+| Genitivo | -ae | -ārum |
+| Dative | -ae | -īs |
+| Ablative | -ā | -īs |
+
+**Exercises:**
+
+*1. MORPHOLOGICAL ANALYSIS (State Case & Number)*
+Words: Puellārum, Rosās, Agricola, Nautīs, Insulae, Viīs, Fabulās, Patria (no macron), Vītam, Viā, Fābulām, Patrias, Vītarum.
+
+*2. FILL IN THE BLANKS (SYNTAX)*
+1. Rēgīna ___ (pecūnia) amat. (Hint: Accusative)
+2. ___ (Nauta) in insulā sunt. (Hint: Nominative Plural)
+3. Claudia, dā aquam ___ (agricola)! (Hint: Dative)
+4. Filiae ___ (poēta) cantant. (Hint: Genitive)
+5. Puellae in ___ (silva) ambulant. (Hint: Ablative)
+6. Incolae ___ (insula - plural) sunt multi. (Hint: Genitive Plural)
+7. Agricola ___ (filia - plural) amat. (Hint: Accusative Plural)
+8. ___ (Puella - plural), labōrāte in casā! (Hint: Vocative Plural)
+9. Nautae ad ___ (terra) nāvigant. (Hint: Accusative w/ prep)
+
+*3. TRANSLATION (Latin to Traditional Chinese)*
+Sentences:
+1. Puellae Rōmānae in via ambulant.
+2. Claudia, spectā lunam et stellās!
+3. Poëta fabulam rēgīnae narrat.
+4. Filia nautae in silvā ambulat.
+5. Rēgīna rosās puellis dat.
+6. Agricolae in terrīs laborant.
+7. Vīta agricolārum est laeta.
+
+## INTERACTION GUIDELINES
+1. **Greeting:** Ask me which exercise I want to start with.
+2. **Guiding Mode:**
+   - Ask me to identify the ending (suffix) of the word.
+   - Ask me to map that ending to the reference table.
+   - Validate my logic.
+3. **Translation:** For Section 3, verify my translations into **Traditional Chinese**, as required by the course material.</div>
+            <div class="actions">
+                <button class="copy-btn" onclick="copyText('prompt-en')">
+                    📋 Copy Prompt
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="toast">✅ Copied to Clipboard!</div>
+
+<script>
+    function openTab(lang) {
+        // Hide all content
+        document.getElementById('content-es').classList.add('hidden');
+        document.getElementById('content-tw').classList.add('hidden');
+        document.getElementById('content-en').classList.add('hidden');
+        
+        // Remove active class from buttons
+        const buttons = document.getElementsByClassName('tab-btn');
+        for (let btn of buttons) {
+            btn.classList.remove('active');
+        }
+
+        // Show selected content and activate button
+        document.getElementById('content-' + lang).classList.remove('hidden');
+        event.currentTarget.classList.add('active');
+    }
+
+    function copyText(elementId) {
+        const text = document.getElementById(elementId).innerText;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            showToast();
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+            // Fallback for older browsers
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("Copy");
+            textArea.remove();
+            showToast();
+        });
+    }
+
+    function showToast() {
+        const toast = document.getElementById("toast");
+        toast.className = "show";
+        setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+    }
+</script>
+
+</body>
+</html>
